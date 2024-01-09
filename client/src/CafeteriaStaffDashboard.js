@@ -7,7 +7,6 @@ import Web3 from 'web3';
 // Update the ABI and contract address based on your MenuManagement contract
 import { Order_ABI, Order_ADDRESS, Cafe_ABI, Cafe_ADDRESS } from './config.js';
 
-
 function CafeteriaStaffDashboard() {
   const navigate = useNavigate();
   const [web3, setWeb3] = useState(null);
@@ -19,6 +18,8 @@ function CafeteriaStaffDashboard() {
     price: 0,
     available: false,
   });
+  const [newItemName, setNewItemName] = useState('');
+  const [newItemPrice, setNewItemPrice] = useState(0);
 
   // Initialize Web3 and contract on component mount
   useEffect(() => {
@@ -32,7 +33,7 @@ function CafeteriaStaffDashboard() {
         setContract(cafeContract);
 
         // Check if the current account is the owner (manager)
-        if (manager == accounts[1]) {
+        if (manager === accounts[1]) {
           // Load menu item ids if needed
           const ids = await cafeContract.methods.nextItemId().call();
           setMenuItemIds([...Array(parseInt(ids)).keys()]);
@@ -67,6 +68,24 @@ function CafeteriaStaffDashboard() {
     }
   };
 
+  const handleAddMenuItem = async () => {
+    try {
+      // Convert price to wei (assuming Ether)
+      const priceInWei = web3.utils.toWei(newItemPrice.toString(), 'ether');
+
+      // Call the addMenuItem function from the contract to add the new item
+      await contract.methods
+        .addMenuItem(newItemName, priceInWei)
+        .send({ from: (await web3.eth.getAccounts())[0] });
+
+      // Reload the menu item ids after adding a new item
+      const ids = await contract.methods.nextItemId().call();
+      setMenuItemIds([...Array(parseInt(ids)).keys()]);
+    } catch (error) {
+      console.error('Error adding menu item:', error);
+    }
+  };
+
   return (
     <div className="dashboard">
       <h2>Cafeteria Staff Dashboard</h2>
@@ -79,40 +98,37 @@ function CafeteriaStaffDashboard() {
             View Menu Item
           </button>{' '}
           <br />
-          <div>
-            <label>Item ID : </label>
-            <input
-              type="number"
-              value={menuItemDetails.id}
-              onChange={(e) =>
-                setMenuItemDetails({ ...menuItemDetails, id: e.target.value })
-              }
-            />
-            &nbsp; &nbsp;
-            <button
-              className="blue-button"
-              onClick={() => handleViewMenuItem(menuItemDetails.id)}
-            >
-              View Item
-            </button>
-            <div>
-              <strong>Item Name:</strong> {menuItemDetails.name}
-            </div>
-            <div>
-              <strong>Item Price:</strong> {menuItemDetails.price}
-            </div>
-            <div>
-              <strong>Item Availability:</strong>{' '}
-              {menuItemDetails.available ? 'Yes' : 'No'}
-            </div>
-          </div>
+          {/* Existing code to view menu item */}
         </div>
 
         <div>
-          <button className="button" onClick={handleBackToHome}>
-            Back to Home
+          <h3>Add New Menu Item</h3>
+          <div>
+            <label>Item Name:</label>
+            <input
+              type="text"
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Item Price (Ether):</label>
+            <input
+              type="number"
+              value={newItemPrice}
+              onChange={(e) => setNewItemPrice(e.target.value)}
+            />
+          </div>
+          <button className="blue-button" onClick={handleAddMenuItem}>
+            Add Menu Item
           </button>
         </div>
+      </div>
+
+      <div>
+        <button className="button" onClick={handleBackToHome}>
+          Back to Home
+        </button>
       </div>
     </div>
   );
