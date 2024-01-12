@@ -52,7 +52,6 @@ contract MenuManagement {
         MenuItem memory item = menuItems[_itemId];
         emit MenuItemGet(item.id, item.name, item.price, item.isAvailable);
         return (item.id, item.name, item.price,true);
-        //emit MenuItemGet(menuItems[_itemId].id,menuItems[_itemId].name,menuItems[_itemId].price,menuItems[_itemId].isAvailable);
-        //return (menuItems[_itemId].id,menuItems[_itemId].name,menuItems[_itemId].price,menuItems[_itemId].isAvailable);
+        
     }
 }

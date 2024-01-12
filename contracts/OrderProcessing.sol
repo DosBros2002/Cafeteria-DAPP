@@ -64,12 +64,10 @@ contract OrderProcessing {
             totalPrice_1 += price * _quantities[i];
         }
        // Apply discount if available
-        if (_discountId != 0) {
-            (, , uint discountPercent, uint validUntil, bool isActive) = promotionsAndDiscounts.getDiscount(_discountId);
-            if (isActive && block.timestamp <= validUntil) {
-                uint discountAmount = totalPrice_1 * discountPercent / 100;
-                totalPrice_1 -= discountAmount; // Apply the discount
-            }
+        if (_discountId != 1000) {
+          (, , uint discountPercent, uint validUntil, bool isActive) = promotionsAndDiscounts.getDiscount(_discountId);
+            uint discountAmount = totalPrice_1 * discountPercent / 100;
+            totalPrice_1 -= discountAmount;           
         }
      //   require(fastcoinContract.approve(address(this), totalPrice), "Approval failed");
      //   require(fastcoinContract.approve(msg.sender, totalPrice), "Approval failed");

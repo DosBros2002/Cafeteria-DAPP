@@ -15,6 +15,7 @@ contract PromotionsAndDiscounts {
 
     event DiscountAdded(uint id, string description, uint discountPercent, uint validUntil);
     event DiscountUpdated(uint id, bool isActive);
+     event DiscountItemGet(uint id,string description,uint dsicountPercent,bool isActive);
 
     constructor() {
         owner = msg.sender;
@@ -41,8 +42,11 @@ contract PromotionsAndDiscounts {
         emit DiscountUpdated(_id, _isActive);
     }
 
-    function getDiscount(uint _id) public view returns (uint,string memory,uint,uint,bool) {
+    function getDiscount(uint _id) public returns (uint,string memory,uint,uint,bool) {
         require(_id < nextDiscountId, "Discount does not exist");
-        return (discounts[_id].id,discounts[_id].description,discounts[_id].discountPercent,discounts[_id].validUntil,discounts[_id].isActive);
+        Discount memory disc = discounts[_id];
+        emit DiscountItemGet(disc.id, disc.description, disc.discountPercent, disc.isActive);
+        return (disc.id, disc.description, disc.discountPercent,disc.validUntil,true);
+       
     }
 }

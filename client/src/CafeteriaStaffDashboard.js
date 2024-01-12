@@ -27,18 +27,16 @@ function CafeteriaStaffDashboard() {
       try {
         const w3 = new Web3(Web3.givenProvider || 'HTTP://127.0.0.1:7545');
         const cafeContract = new w3.eth.Contract(Cafe_ABI, Cafe_ADDRESS);
-        const accounts = await w3.eth.getAccounts();
-        const manager = accounts[1];
+        //const accounts = await w3.eth.getAccounts();
+        const manager = await requestAccount();
+        console.log(manager);
         setWeb3(w3);
         setContract(cafeContract);
 
-        // Check if the current account is the owner (manager)
-        if (manager === accounts[1]) {
-          // Load menu item ids if needed
+        if (true) {
           const ids = await cafeContract.methods.nextItemId().call();
           setMenuItemIds([...Array(parseInt(ids)).keys()]);
         } else {
-          // Redirect to the home page if not the manager
           navigate('/');
         }
       } catch (error) {
@@ -53,6 +51,18 @@ function CafeteriaStaffDashboard() {
     // Navigate back to the home page
     navigate('/');
   };
+
+  async function requestAccount() {
+    try {
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+      return accounts[0];
+    } catch (error) {
+      console.error('User denied account access');
+      return null;
+    }
+  }
 
   const handleViewMenuItem = async (itemId) => {
     try {
@@ -69,18 +79,18 @@ function CafeteriaStaffDashboard() {
   };
 
   const handleAddMenuItem = async () => {
+    console.log('Button clicked');
     try {
-      // Convert price to wei (assuming Ether)
-      const priceInWei = web3.utils.toWei(newItemPrice.toString(), 'ether');
-
+      const account_address = await requestAccount();       
+      const priceInWei = parseInt(newItemPrice);
+      console.log(typeof(priceInWei));
       // Call the addMenuItem function from the contract to add the new item
-      await contract.methods
-        .addMenuItem(newItemName, priceInWei)
-        .send({ from: (await web3.eth.getAccounts())[0] });
+      await contract.methods.addMenuItem(newItemName, priceInWei).send({
+        from: account_address,
+        //gas: 200000, // Adjust gas as needed
+      });
 
-      // Reload the menu item ids after adding a new item
-      const ids = await contract.methods.nextItemId().call();
-      setMenuItemIds([...Array(parseInt(ids)).keys()]);
+
     } catch (error) {
       console.error('Error adding menu item:', error);
     }

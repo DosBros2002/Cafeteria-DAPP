@@ -11,7 +11,7 @@ body {
   }
   
   .header {
-    background-color: #3498db;
+    background-color: #b1110e;
     color: #fff;
     padding: 10px;
     text-align: center;
@@ -26,12 +26,12 @@ body {
     margin-bottom: 10px;
     text-decoration: none;
     padding: 5px;
-    background-color: #3498db;
+    background-color: #ca2d2d;
     color: #fff;
     border-radius: 5px;
     text-align: center;
   }
   
   .link:hover {
-    background-color: #2980b9;
+    background-color: hsl(0, 63%, 38%);
   }
