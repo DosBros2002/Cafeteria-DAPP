@@ -2,14 +2,14 @@
 .home-page {
     max-width: 600px;
     margin: 20px auto;
-    background-color: #124082;
+    background-color: #19353d;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
   
   .button-primary {
-    background-color: #3498db;
+    background-color: #bbcb22;
     color: #fff;
     padding: 10px 15px;
     border: none;

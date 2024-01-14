@@ -4,6 +4,7 @@ pragma solidity ^0.8.7;
 import "./FastCoin.sol";
 import "./MenuManagement.sol";
 import "./PromotionsAndDiscounts.sol";
+import "./LoyaltyRewards.sol";
 
 contract OrderProcessing {
     struct Order {
@@ -28,6 +29,7 @@ contract OrderProcessing {
     MenuManagement menuManagement;
     PromotionsAndDiscounts promotionsAndDiscounts;
     FastCoin public fastcoinContract;
+    LoyaltyRewards public loyaltyContract;
 
     address public cafeteriaWallet = 0x1a195a9e85eb5865720f215f4380871E5a1c5b28; 
 
@@ -35,12 +37,13 @@ contract OrderProcessing {
     event OrderCompleted(uint orderId);
     event getAddress(address addy);
 
-    constructor(address _menuManagementAddress,address _promotionsanddiscounts,address _cafeteriaWallet,address _fastcoinContract) {
+    constructor(address _menuManagementAddress,address _promotionsanddiscounts,address _cafeteriaWallet,address _fastcoinContract,address _loyaltyContract) {
         manager = msg.sender;
         menuManagement = MenuManagement(_menuManagementAddress);
         cafeteriaWallet = _cafeteriaWallet;
         fastcoinContract = FastCoin(_fastcoinContract);
         promotionsAndDiscounts = PromotionsAndDiscounts(_promotionsanddiscounts);
+        loyaltyContract = LoyaltyRewards(_loyaltyContract);
     }
 
     modifier onlyManager() {
@@ -66,8 +69,11 @@ contract OrderProcessing {
        // Apply discount if available
         if (_discountId != 1000) {
           (, , uint discountPercent, uint validUntil, bool isActive) = promotionsAndDiscounts.getDiscount(_discountId);
+          (uint Point)= loyaltyContract.getPoints(msg.sender);
             uint discountAmount = totalPrice_1 * discountPercent / 100;
-            totalPrice_1 -= discountAmount;           
+            uint loyaltydiscount = totalPrice_1 * Point /100;
+            totalPrice_1 -= discountAmount ;
+            totalPrice_1 -= loyaltydiscount;           
         }
      //   require(fastcoinContract.approve(address(this), totalPrice), "Approval failed");
      //   require(fastcoinContract.approve(msg.sender, totalPrice), "Approval failed");

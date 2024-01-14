@@ -53,6 +53,10 @@ contract FastCoin is ERC20 {
         return true;
     }
 
+    function getBalance(address account) public view returns (uint256) {
+        return balanceOf(account);
+    }
+
 
 }
     
